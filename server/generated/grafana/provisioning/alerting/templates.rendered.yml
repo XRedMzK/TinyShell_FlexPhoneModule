@@ -1,0 +1,14 @@
+apiVersion: 1
+templates:
+  -
+    name: "template_email"
+    orgId: 1
+    template: "{{ define \"template_email.title\" }}[{{ .Status | toUpper }}] {{ .CommonLabels.service }} {{ .GroupLabels.alertname }}{{ end }}\n{{ define \"template_email.body\" }}{{ range .Alerts }}summary={{ .Annotations.summary }} desc={{ .Annotations.description }}{{ end }}{{ end }}"
+  -
+    name: "template_slack"
+    orgId: 1
+    template: "{{ define \"template_slack.title\" }}[{{ .Status | toUpper }}] {{ .CommonLabels.severity }} {{ .GroupLabels.alertname }}{{ end }}\n{{ define \"template_slack.body\" }}{{ range .Alerts }}{{ .Annotations.summary }} | runbook={{ .Annotations.runbook_url }}{{ end }}{{ end }}"
+  -
+    name: "template_webhook"
+    orgId: 1
+    template: "{{ define \"template_webhook.title\" }}{{ .Status }} {{ .GroupLabels.alertname }}{{ end }}\n{{ define \"template_webhook.body\" }}alerts={{ len .Alerts }}{{ end }}"

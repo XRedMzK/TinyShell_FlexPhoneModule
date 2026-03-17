@@ -1,0 +1,46 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node / frontend
+node_modules/
+client/node_modules/
+client/dist/
+client/build/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.venv*/
+venv/
+
+# Logs / runtime
+*.log
+.runtime/
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+
+# Redis / temp artifacts
+*.rdb
+dump.rdb
+
+# Python coverage
+.coverage
+htmlcov/
+
+# Rust / Tauri build
+target/
+client/src-tauri/target/
+
+# Local docker helper cache
+server/.tmp-docker-config/
+
+# Misc
+*.tmp

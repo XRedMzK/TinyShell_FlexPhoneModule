@@ -1,0 +1,330 @@
+apiVersion: 1
+policies:
+  -
+    group_by:
+      - "service"
+      - "severity"
+    group_interval: "15m"
+    group_wait: "120s"
+    orgId: 1
+    receiver: "dashboard_only"
+    repeat_interval: "12h"
+    routes:
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "routing_key"
+        group_interval: "10m"
+        group_wait: "60s"
+        mute_time_intervals:
+          - "recurring_mute_timing"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:auth_availability:burn_budget_ticket"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "auth"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "ticket"
+        receiver: "ops_ticket_queue"
+        repeat_interval: "8h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "alert_class"
+          - "routing_key"
+        group_interval: "5m"
+        group_wait: "30s"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:auth_availability:burn_fast_page"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "auth"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "page"
+        receiver: "primary_oncall"
+        repeat_interval: "4h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "alert_class"
+          - "routing_key"
+        group_interval: "5m"
+        group_wait: "30s"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:auth_availability:burn_slow_page"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "auth"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "page"
+        receiver: "primary_oncall"
+        repeat_interval: "4h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "routing_key"
+        group_interval: "10m"
+        group_wait: "60s"
+        mute_time_intervals:
+          - "recurring_mute_timing"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:readiness_availability:burn_budget_ticket"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "readiness"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "ticket"
+        receiver: "ops_ticket_queue"
+        repeat_interval: "8h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "alert_class"
+          - "routing_key"
+        group_interval: "5m"
+        group_wait: "30s"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:readiness_availability:burn_fast_page"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "readiness"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "page"
+        receiver: "primary_oncall"
+        repeat_interval: "4h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "alert_class"
+          - "routing_key"
+        group_interval: "5m"
+        group_wait: "30s"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:readiness_availability:burn_slow_page"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "readiness"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "page"
+        receiver: "primary_oncall"
+        repeat_interval: "4h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "routing_key"
+        group_interval: "10m"
+        group_wait: "60s"
+        mute_time_intervals:
+          - "recurring_mute_timing"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:ws_session_establishment:burn_budget_ticket"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "ws"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "ticket"
+        receiver: "ops_ticket_queue"
+        repeat_interval: "8h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "alert_class"
+          - "routing_key"
+        group_interval: "5m"
+        group_wait: "30s"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:ws_session_establishment:burn_fast_page"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "ws"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "page"
+        receiver: "primary_oncall"
+        repeat_interval: "4h"
+        routes:
+          []
+      -
+        continue: false
+        group_by:
+          - "service"
+          - "component"
+          - "severity"
+          - "alert_class"
+          - "routing_key"
+        group_interval: "5m"
+        group_wait: "30s"
+        object_matchers:
+          -
+            - "alert_alias"
+            - "="
+            - "slo:ws_session_establishment:burn_slow_page"
+          -
+            - "alert_class"
+            - "="
+            - "slo_burn_rate"
+          -
+            - "component"
+            - "="
+            - "ws"
+          -
+            - "service"
+            - "="
+            - "flexphone-server"
+          -
+            - "severity"
+            - "="
+            - "page"
+        receiver: "primary_oncall"
+        repeat_interval: "4h"
+        routes:
+          []

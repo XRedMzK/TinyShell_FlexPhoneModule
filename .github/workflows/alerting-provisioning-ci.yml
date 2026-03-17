@@ -1,0 +1,43 @@
+name: alerting-provisioning-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/alerting-provisioning-ci.yml"
+      - "server/app/reliability_alert_provisioning_artifacts_baseline.py"
+      - "server/app/reliability_alert_provisioning_render.py"
+      - "server/tools/check_alert_provisioning_artifacts.py"
+      - "server/tools/run_alerting_provisioning_sandbox_smoke.py"
+      - "server/generated/alertmanager/alertmanager.rendered.yml"
+      - "server/generated/grafana/provisioning/alerting/**"
+      - "docs/step20-rendered-provisioning-artifacts-baseline.md"
+      - "docs/step20-provisioning-apply-compatibility-baseline.md"
+      - "docs/step20-ci-gate-provisioning-baseline.md"
+
+jobs:
+  provisioning-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Render drift check
+        run: python tools/check_alert_provisioning_artifacts.py
+
+      - name: Sandbox apply/compatibility smoke
+        run: python tools/run_alerting_provisioning_sandbox_smoke.py

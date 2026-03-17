@@ -1,0 +1,19 @@
+# Minimal local coturn config for FlexPhone development.
+listening-port=3478
+fingerprint
+lt-cred-mech
+realm=flexphone.local
+use-auth-secret
+static-auth-secret=replace_with_shared_secret
+
+# Keep relay ports tight for local firewall rules.
+min-port=49160
+max-port=49200
+
+# Disable TLS/DTLS for local dev. Do not use this in production.
+no-tls
+no-dtls
+
+# Log to stdout when running in containers.
+simple-log
+log-file=stdout

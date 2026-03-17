@@ -1,0 +1,50 @@
+apiVersion: 1
+contactPoints:
+  -
+    name: "dashboard_only"
+    orgId: 1
+    receivers:
+      -
+        disableResolveMessage: false
+        settings:
+          url: "http://alerts.local/dashboard_only"
+        text: "alerts={{ len .Alerts }}"
+        title: "{{ .Status }} {{ .GroupLabels.alertname }}"
+        type: "webhook"
+        uid: "dashboard_only"
+  -
+    name: "ops_ticket_queue"
+    orgId: 1
+    receivers:
+      -
+        disableResolveMessage: false
+        settings:
+          addresses: "ops@example.local"
+        text: "{{ range .Alerts }}summary={{ .Annotations.summary }} desc={{ .Annotations.description }}{{ end }}"
+        title: "[{{ .Status | toUpper }}] {{ .CommonLabels.service }} {{ .GroupLabels.alertname }}"
+        type: "email"
+        uid: "ops_ticket_queue"
+  -
+    name: "primary_oncall"
+    orgId: 1
+    receivers:
+      -
+        disableResolveMessage: false
+        settings:
+          url: "http://alerts.local/pagerduty_primary"
+        text: "{{ range .Alerts }}{{ .Annotations.summary }} | runbook={{ .Annotations.runbook_url }}{{ end }}"
+        title: "[{{ .Status | toUpper }}] {{ .CommonLabels.severity }} {{ .GroupLabels.alertname }}"
+        type: "slack"
+        uid: "primary_oncall"
+  -
+    name: "secondary_oncall"
+    orgId: 1
+    receivers:
+      -
+        disableResolveMessage: false
+        settings:
+          url: "http://alerts.local/pagerduty_secondary"
+        text: "{{ range .Alerts }}{{ .Annotations.summary }} | runbook={{ .Annotations.runbook_url }}{{ end }}"
+        title: "[{{ .Status | toUpper }}] {{ .CommonLabels.severity }} {{ .GroupLabels.alertname }}"
+        type: "slack"
+        uid: "secondary_oncall"

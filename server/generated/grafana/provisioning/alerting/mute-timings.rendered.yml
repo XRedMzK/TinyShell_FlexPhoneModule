@@ -1,0 +1,13 @@
+apiVersion: 1
+muteTimes:
+  -
+    name: "recurring_mute_timing"
+    time_intervals:
+      -
+        location: "UTC"
+        times:
+          -
+            end_time: "06:00"
+            start_time: "00:00"
+        weekdays:
+          - "sunday:saturday"
