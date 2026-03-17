@@ -1,0 +1,84 @@
+name: runtime-cutover-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/runtime-cutover-ci.yml"
+      - "server/app/durable_signaling_runtime_cutover_baseline.py"
+      - "server/app/durable_signaling_runtime_path_inventory.py"
+      - "server/app/durable_signaling_dual_write_shadow_read_contract.py"
+      - "server/tools/check_durable_signaling_runtime_cutover_baseline.py"
+      - "server/tools/check_durable_signaling_runtime_path_inventory.py"
+      - "server/tools/check_durable_signaling_dual_write_shadow_read_contract.py"
+      - "server/tools/check_runtime_cutover_ci_gate_baseline.py"
+      - "server/tools/check_runtime_cutover_production_readiness_rollback_contract.py"
+      - "server/tools/run_durable_signaling_sandbox_smoke.py"
+      - "server/tools/run_runtime_cutover_sandbox_smoke.py"
+      - "server/tools/run_runtime_cutover_ci_simulation.py"
+      - "server/app/runtime_cutover_production_readiness_rollback_contract.py"
+      - "docs/step23-durable-signaling-runtime-cutover-baseline.md"
+      - "docs/step23-authoritative-runtime-path-inventory-migration-matrix.md"
+      - "docs/step23-dual-write-shadow-read-runtime-contract-baseline.md"
+      - "docs/step23-runtime-cutover-sandbox-smoke-baseline.md"
+      - "docs/step23-ci-runtime-cutover-mode-gate-baseline.md"
+      - "docs/step23-production-readiness-rollback-contract-baseline.md"
+
+jobs:
+  runtime-cutover-mode-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [pubsub_legacy, dual_write_shadow, durable_authoritative]
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt fastapi "uvicorn[standard]" websockets pydantic pydantic-settings
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Step 23.2 runtime path inventory check
+        run: python tools/check_durable_signaling_runtime_path_inventory.py
+
+      - name: Step 23.3 dual-write/shadow-read contract check
+        run: python tools/check_durable_signaling_dual_write_shadow_read_contract.py
+
+      - name: Step 23.5 CI gate baseline check
+        run: python tools/check_runtime_cutover_ci_gate_baseline.py
+
+      - name: Step 23.6 production readiness/rollback contract check
+        run: python tools/check_runtime_cutover_production_readiness_rollback_contract.py
+
+      - name: Runtime cutover CI simulation (${{ matrix.mode }})
+        env:
+          FLEXPHONE_CUTOVER_CI_MODE: ${{ matrix.mode }}
+          FLEXPHONE_CUTOVER_CI_REDIS_URL: redis://127.0.0.1:6379/0
+          FLEXPHONE_CUTOVER_SMOKE_REDIS_URL: redis://127.0.0.1:6379/0
+        run: python tools/run_runtime_cutover_ci_simulation.py

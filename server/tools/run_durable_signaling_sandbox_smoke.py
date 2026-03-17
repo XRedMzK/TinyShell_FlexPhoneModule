@@ -8,6 +8,7 @@ import secrets
 import signal
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 import uuid
@@ -25,6 +26,8 @@ from redis.exceptions import ResponseError
 
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON_BIN = ROOT / ".venv_tmpcheck" / "bin" / "python"
+if not PYTHON_BIN.exists():
+    PYTHON_BIN = Path(sys.executable)
 
 REQUEST_TIMEOUT_SECONDS = 5
 HEALTH_TIMEOUT_SECONDS = 30

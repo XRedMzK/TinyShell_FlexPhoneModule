@@ -1,0 +1,75 @@
+name: webrtc-lifecycle-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/webrtc-lifecycle-ci.yml"
+      - "server/app/webrtc_session_lifecycle_hardening_baseline.py"
+      - "server/app/webrtc_peer_session_state_inventory.py"
+      - "server/app/webrtc_negotiation_glare_resolution_contract.py"
+      - "server/app/webrtc_reconnect_ice_restart_pending_recovery_contract.py"
+      - "server/app/webrtc_lifecycle_ci_gate_baseline.py"
+      - "server/tools/check_webrtc_session_lifecycle_hardening_baseline.py"
+      - "server/tools/check_webrtc_peer_session_state_inventory.py"
+      - "server/tools/check_webrtc_negotiation_glare_resolution_contract.py"
+      - "server/tools/check_webrtc_reconnect_ice_restart_pending_recovery_contract.py"
+      - "server/tools/check_webrtc_lifecycle_ci_gate_baseline.py"
+      - "server/tools/run_webrtc_lifecycle_sandbox_smoke.py"
+      - "server/tools/run_webrtc_lifecycle_ci_simulation.py"
+      - "docs/step24-webrtc-session-lifecycle-hardening-baseline.md"
+      - "docs/step24-peer-session-state-inventory-transition-matrix-baseline.md"
+      - "docs/step24-negotiation-glare-resolution-contract-baseline.md"
+      - "docs/step24-reconnect-ice-restart-pending-recovery-contract-baseline.md"
+      - "docs/step24-lifecycle-sandbox-smoke-baseline.md"
+      - "docs/step24-lifecycle-ci-gate-baseline.md"
+
+jobs:
+  webrtc-lifecycle-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [A_happy_path_lifecycle, B_glare_collision_roles, C_transient_disconnect_recovery, D_failed_ice_restart_recovery, E_late_signaling_ignored, F_close_during_pending_recovery]
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Step 24.1 lifecycle baseline check
+        run: python tools/check_webrtc_session_lifecycle_hardening_baseline.py
+
+      - name: Step 24.2 state inventory check
+        run: python tools/check_webrtc_peer_session_state_inventory.py
+
+      - name: Step 24.3 negotiation/glare contract check
+        run: python tools/check_webrtc_negotiation_glare_resolution_contract.py
+
+      - name: Step 24.4 reconnect/restart recovery contract check
+        run: python tools/check_webrtc_reconnect_ice_restart_pending_recovery_contract.py
+
+      - name: Step 24.6 lifecycle CI gate baseline check
+        run: python tools/check_webrtc_lifecycle_ci_gate_baseline.py
+
+      - name: WebRTC lifecycle CI simulation (${{ matrix.scenario }})
+        env:
+          FLEXPHONE_WEBRTC_LIFECYCLE_CI_SCENARIO: ${{ matrix.scenario }}
+        run: python tools/run_webrtc_lifecycle_ci_simulation.py
