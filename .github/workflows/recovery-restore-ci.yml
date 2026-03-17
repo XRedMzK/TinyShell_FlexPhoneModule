@@ -1,0 +1,58 @@
+name: recovery-restore-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/recovery-restore-ci.yml"
+      - "server/app/recovery_restore_baseline.py"
+      - "server/app/recovery_restore_inventory_baseline.py"
+      - "server/app/recovery_restore_redis_semantics_baseline.py"
+      - "server/tools/check_recovery_restore_baseline.py"
+      - "server/tools/check_recovery_restore_inventory_baseline.py"
+      - "server/tools/check_recovery_restore_redis_semantics_baseline.py"
+      - "server/tools/run_post_restore_runtime_validation_smoke.py"
+      - "server/tools/run_recovery_restore_sandbox_smoke.py"
+      - "server/tools/check_alert_provisioning_artifacts.py"
+      - "server/tools/run_alerting_provisioning_sandbox_smoke.py"
+      - "server/generated/alertmanager/alertmanager.rendered.yml"
+      - "server/generated/grafana/provisioning/alerting/**"
+      - "docs/step21-recovery-restore-baseline.md"
+      - "docs/step21-source-of-truth-backup-restore-inventory-baseline.md"
+      - "docs/step21-redis-recovery-semantics-baseline.md"
+      - "docs/step21-post-restore-runtime-validation-checklist-baseline.md"
+      - "docs/step21-sandbox-restore-smoke-runbook-baseline.md"
+      - "docs/step21-ci-restore-simulation-gate-baseline.md"
+
+jobs:
+  restore-simulation-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Recovery baseline contract check
+        run: python tools/check_recovery_restore_baseline.py
+
+      - name: Recovery inventory contract check
+        run: python tools/check_recovery_restore_inventory_baseline.py
+
+      - name: Redis recovery semantics contract check
+        run: python tools/check_recovery_restore_redis_semantics_baseline.py
+
+      - name: Restore simulation rehearsal
+        run: python tools/run_recovery_restore_sandbox_smoke.py
