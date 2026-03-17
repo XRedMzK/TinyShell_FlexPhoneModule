@@ -1,0 +1,64 @@
+name: durable-signaling-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/durable-signaling-ci.yml"
+      - "server/app/signaling_event_inventory_baseline.py"
+      - "server/app/signaling_durable_event_model_baseline.py"
+      - "server/tools/check_signaling_event_inventory_baseline.py"
+      - "server/tools/check_signaling_durable_event_model_baseline.py"
+      - "server/tools/run_durable_signaling_sandbox_smoke.py"
+      - "server/tools/run_durable_signaling_ci_simulation.py"
+      - "docs/step22-signaling-event-inventory-baseline.md"
+      - "docs/step22-signaling-durable-event-model-baseline.md"
+      - "docs/step22-sandbox-durable-signaling-smoke-baseline.md"
+      - "docs/step22-ci-durable-signaling-simulation-gate-baseline.md"
+
+jobs:
+  durable-signaling-simulation-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt fastapi "uvicorn[standard]" websockets pydantic pydantic-settings
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Signaling event inventory baseline check
+        run: python tools/check_signaling_event_inventory_baseline.py
+
+      - name: Durable event model baseline check
+        run: python tools/check_signaling_durable_event_model_baseline.py
+
+      - name: Durable signaling simulation gate
+        env:
+          FLEXPHONE_DURABLE_SIM_REDIS_URL: redis://127.0.0.1:6379/0
+        run: python tools/run_durable_signaling_ci_simulation.py
