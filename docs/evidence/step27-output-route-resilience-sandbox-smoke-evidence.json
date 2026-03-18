@@ -1,0 +1,93 @@
+{
+  "stage": "27.6",
+  "executed_at": "2026-03-17 20:14 (MSK)",
+  "runtime_class": "sandbox_simulation",
+  "source_runner": "server/tools/run_webrtc_output_route_resilience_sandbox_smoke.py",
+  "scenarios": [
+    {
+      "scenario_id": "A_non_default_apply_happy_path",
+      "executed_at": "2026-03-17 20:14 (MSK)",
+      "runtime_class": "sandbox_simulation",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC output-route resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "non_default_apply_success",
+        "preferred_equals_effective_non_default"
+      ],
+      "notes": "Explicit selection/apply path reached bound state."
+    },
+    {
+      "scenario_id": "B_stale_sink_loss_fallback_default",
+      "executed_at": "2026-03-17 20:14 (MSK)",
+      "runtime_class": "sandbox_simulation",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC output-route resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "stale_sink_detected",
+        "fallback_to_default",
+        "preferred_preserved"
+      ],
+      "notes": "Effective sink fell back to default and preserved preferred sink id."
+    },
+    {
+      "scenario_id": "C_passive_rebind_after_return",
+      "executed_at": "2026-03-17 20:14 (MSK)",
+      "runtime_class": "sandbox_simulation",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC output-route resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "pending_rebind_detected",
+        "passive_rebind_success"
+      ],
+      "notes": "Preferred sink reappeared and passive rebind restored effective sink."
+    },
+    {
+      "scenario_id": "D_interactive_rebind_rotated_id",
+      "executed_at": "2026-03-17 20:14 (MSK)",
+      "runtime_class": "sandbox_simulation",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC output-route resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "persisted_id_revalidated",
+        "rotated_id_applied"
+      ],
+      "notes": "Interactive restore path applied rotated sink id after revalidation."
+    },
+    {
+      "scenario_id": "E_explicit_reconcile_without_devicechange",
+      "executed_at": "2026-03-17 20:14 (MSK)",
+      "runtime_class": "sandbox_simulation",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC output-route resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "explicit_reconcile_without_devicechange",
+        "enumerate_snapshot_authoritative"
+      ],
+      "notes": "Explicit reconcile path restored correctness without mandatory devicechange delivery."
+    },
+    {
+      "scenario_id": "F_error_class_sanity",
+      "executed_at": "2026-03-17 20:14 (MSK)",
+      "runtime_class": "sandbox_simulation",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC output-route resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "not_found_and_abort_not_success",
+        "not_allowed_separate_permission_branch"
+      ],
+      "notes": "Apply error classes remained phase-specific and non-overlapping."
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+name: webrtc-output-route-resilience-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/webrtc-output-route-resilience-ci.yml"
+      - "server/app/webrtc_audio_output_remote_playout_route_resilience_baseline.py"
+      - "server/app/webrtc_output_device_inventory_permission_policy_visibility_contract_baseline.py"
+      - "server/app/webrtc_sink_selection_apply_semantics_error_class_contract_baseline.py"
+      - "server/app/webrtc_output_device_loss_fallback_rebinding_contract_baseline.py"
+      - "server/app/webrtc_output_devicechange_reconciliation_contract_baseline.py"
+      - "server/app/webrtc_output_route_resilience_ci_gate_baseline.py"
+      - "server/tools/check_webrtc_audio_output_remote_playout_route_resilience_baseline.py"
+      - "server/tools/check_webrtc_output_device_inventory_permission_policy_visibility_contract_baseline.py"
+      - "server/tools/check_webrtc_sink_selection_apply_semantics_error_class_contract_baseline.py"
+      - "server/tools/check_webrtc_output_device_loss_fallback_rebinding_contract_baseline.py"
+      - "server/tools/check_webrtc_output_devicechange_reconciliation_contract_baseline.py"
+      - "server/tools/check_webrtc_output_route_resilience_ci_gate_baseline.py"
+      - "server/tools/run_webrtc_output_route_resilience_sandbox_smoke.py"
+      - "server/tools/run_webrtc_output_route_resilience_ci_gate.py"
+      - "docs/step27-audio-output-remote-playout-route-resilience-baseline.md"
+      - "docs/step27-output-device-inventory-permission-policy-visibility-contract-baseline.md"
+      - "docs/step27-sink-selection-apply-semantics-error-class-contract-baseline.md"
+      - "docs/step27-output-device-loss-fallback-rebinding-contract-baseline.md"
+      - "docs/step27-output-devicechange-reconciliation-contract-baseline.md"
+      - "docs/step27-output-route-resilience-sandbox-smoke-baseline.md"
+      - "docs/step27-output-route-resilience-ci-gate-baseline.md"
+      - "docs/evidence/step27-output-route-resilience-sandbox-smoke-evidence.json"
+
+jobs:
+  webrtc-output-route-resilience-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Step 26.7 dependency check
+        run: python tools/check_webrtc_capture_resilience_ci_gate_baseline.py
+
+      - name: Step 27.1 baseline check
+        run: python tools/check_webrtc_audio_output_remote_playout_route_resilience_baseline.py
+
+      - name: Step 27.2 inventory visibility check
+        run: python tools/check_webrtc_output_device_inventory_permission_policy_visibility_contract_baseline.py
+
+      - name: Step 27.3 selection/apply contract check
+        run: python tools/check_webrtc_sink_selection_apply_semantics_error_class_contract_baseline.py
+
+      - name: Step 27.4 loss fallback/rebind check
+        run: python tools/check_webrtc_output_device_loss_fallback_rebinding_contract_baseline.py
+
+      - name: Step 27.5 devicechange reconciliation check
+        run: python tools/check_webrtc_output_devicechange_reconciliation_contract_baseline.py
+
+      - name: Step 27.7 CI gate baseline check
+        run: python tools/check_webrtc_output_route_resilience_ci_gate_baseline.py
+
+      - name: Output-route resilience CI gate
+        run: python tools/run_webrtc_output_route_resilience_ci_gate.py

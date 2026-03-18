@@ -1,0 +1,79 @@
+name: webrtc-remote-media-resilience-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/webrtc-remote-media-resilience-ci.yml"
+      - "server/app/webrtc_remote_media_attach_autoplay_track_state_resilience_baseline.py"
+      - "server/app/webrtc_remote_track_attach_ownership_contract_baseline.py"
+      - "server/app/webrtc_autoplay_play_promise_user_gesture_recovery_contract_baseline.py"
+      - "server/app/webrtc_remote_track_mute_unmute_ended_resilience_contract_baseline.py"
+      - "server/app/webrtc_media_element_remount_reattach_recovery_contract_baseline.py"
+      - "server/app/webrtc_remote_media_resilience_ci_gate_baseline.py"
+      - "server/tools/check_webrtc_remote_media_attach_autoplay_track_state_resilience_baseline.py"
+      - "server/tools/check_webrtc_remote_track_attach_ownership_contract_baseline.py"
+      - "server/tools/check_webrtc_autoplay_play_promise_user_gesture_recovery_contract_baseline.py"
+      - "server/tools/check_webrtc_remote_track_mute_unmute_ended_resilience_contract_baseline.py"
+      - "server/tools/check_webrtc_media_element_remount_reattach_recovery_contract_baseline.py"
+      - "server/tools/check_webrtc_remote_media_resilience_ci_gate_baseline.py"
+      - "server/tools/run_webrtc_remote_media_resilience_sandbox_smoke.py"
+      - "server/tools/run_webrtc_remote_media_resilience_ci_gate.py"
+      - "docs/step28-remote-media-attach-autoplay-track-state-resilience-baseline.md"
+      - "docs/step28-remote-track-attach-ownership-contract-baseline.md"
+      - "docs/step28-autoplay-play-promise-user-gesture-recovery-contract-baseline.md"
+      - "docs/step28-remote-track-mute-unmute-ended-resilience-contract-baseline.md"
+      - "docs/step28-media-element-remount-reattach-recovery-contract-baseline.md"
+      - "docs/step28-remote-media-resilience-sandbox-smoke-baseline.md"
+      - "docs/step28-remote-media-resilience-ci-gate-baseline.md"
+      - "docs/evidence/step28-remote-media-resilience-sandbox-smoke-evidence.json"
+
+jobs:
+  webrtc-remote-media-resilience-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Step 27.7 dependency check
+        run: python tools/check_webrtc_output_route_resilience_ci_gate_baseline.py
+
+      - name: Step 28.1 baseline check
+        run: python tools/check_webrtc_remote_media_attach_autoplay_track_state_resilience_baseline.py
+
+      - name: Step 28.2 attach ownership check
+        run: python tools/check_webrtc_remote_track_attach_ownership_contract_baseline.py
+
+      - name: Step 28.3 autoplay/play contract check
+        run: python tools/check_webrtc_autoplay_play_promise_user_gesture_recovery_contract_baseline.py
+
+      - name: Step 28.4 track-state resilience check
+        run: python tools/check_webrtc_remote_track_mute_unmute_ended_resilience_contract_baseline.py
+
+      - name: Step 28.5 remount/reattach contract check
+        run: python tools/check_webrtc_media_element_remount_reattach_recovery_contract_baseline.py
+
+      - name: Step 28.7 CI gate baseline check
+        run: python tools/check_webrtc_remote_media_resilience_ci_gate_baseline.py
+
+      - name: Remote-media resilience CI gate
+        run: python tools/run_webrtc_remote_media_resilience_ci_gate.py

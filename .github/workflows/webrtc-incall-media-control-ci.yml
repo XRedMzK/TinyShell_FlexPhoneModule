@@ -1,0 +1,75 @@
+name: webrtc-incall-media-control-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/webrtc-incall-media-control-ci.yml"
+      - "server/app/webrtc_incall_media_control_quality_observability_baseline.py"
+      - "server/app/webrtc_media_control_state_inventory.py"
+      - "server/app/webrtc_mute_unmute_source_switch_transceiver_direction_contract.py"
+      - "server/app/webrtc_sender_parameters_bitrate_codec_boundary_contract.py"
+      - "server/app/webrtc_incall_quality_observability_baseline.py"
+      - "server/app/webrtc_incall_media_control_ci_gate_baseline.py"
+      - "server/tools/check_webrtc_incall_media_control_quality_observability_baseline.py"
+      - "server/tools/check_webrtc_media_control_state_inventory.py"
+      - "server/tools/check_webrtc_mute_unmute_source_switch_transceiver_direction_contract.py"
+      - "server/tools/check_webrtc_sender_parameters_bitrate_codec_boundary_contract.py"
+      - "server/tools/check_webrtc_incall_quality_observability_baseline.py"
+      - "server/tools/check_webrtc_incall_media_control_ci_gate_baseline.py"
+      - "server/tools/run_webrtc_incall_media_control_sandbox_smoke.py"
+      - "server/tools/run_webrtc_incall_media_control_ci_simulation.py"
+      - "docs/step25-incall-media-control-quality-observability-baseline.md"
+      - "docs/step25-media-control-state-inventory-ownership-matrix-baseline.md"
+      - "docs/step25-mute-unmute-source-switch-transceiver-direction-contract-baseline.md"
+      - "docs/step25-sender-parameters-bitrate-codec-boundary-contract-baseline.md"
+      - "docs/step25-incall-quality-observability-baseline.md"
+      - "docs/step25-incall-media-control-sandbox-smoke-baseline.md"
+      - "docs/step25-incall-media-control-ci-gate-baseline.md"
+
+jobs:
+  webrtc-incall-media-control-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Step 25.1 baseline check
+        run: python tools/check_webrtc_incall_media_control_quality_observability_baseline.py
+
+      - name: Step 25.2 state inventory check
+        run: python tools/check_webrtc_media_control_state_inventory.py
+
+      - name: Step 25.3 media operation contract check
+        run: python tools/check_webrtc_mute_unmute_source_switch_transceiver_direction_contract.py
+
+      - name: Step 25.4 sender boundary contract check
+        run: python tools/check_webrtc_sender_parameters_bitrate_codec_boundary_contract.py
+
+      - name: Step 25.5 quality observability check
+        run: python tools/check_webrtc_incall_quality_observability_baseline.py
+
+      - name: Step 25.7 CI gate baseline check
+        run: python tools/check_webrtc_incall_media_control_ci_gate_baseline.py
+
+      - name: In-call media-control CI simulation
+        run: python tools/run_webrtc_incall_media_control_ci_simulation.py

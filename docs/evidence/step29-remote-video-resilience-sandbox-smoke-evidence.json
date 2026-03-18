@@ -1,0 +1,126 @@
+{
+  "stage": "29.6",
+  "executed_at": "2026-03-18 18:09 (MSK)",
+  "runtime_class": "sandbox_simulation",
+  "source_runner": "server/tools/run_webrtc_remote_video_resilience_sandbox_smoke.py",
+  "overall_status": "PASS",
+  "scenario_ids": [
+    "A_cold_attach_happy_path",
+    "B_metadata_without_first_frame_false_positive_guard",
+    "C_waiting_resume_grace_then_progress",
+    "D_stalled_fetch_starvation_branch",
+    "E_intrinsic_dimension_update_no_failure_reattach",
+    "F_remount_reattach_continuity",
+    "G_rvfc_unavailable_quality_fallback",
+    "H_playing_without_real_frames_non_success_guard"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "A_cold_attach_happy_path",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "first_frame_proven_after_loadeddata",
+        "progress_observed_after_playing"
+      ]
+    },
+    {
+      "scenario_id": "B_metadata_without_first_frame_false_positive_guard",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "metadata_only_not_first_frame_ready",
+        "no_false_ready_classification"
+      ]
+    },
+    {
+      "scenario_id": "C_waiting_resume_grace_then_progress",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "waiting_starvation_non_terminal",
+        "resume_grace_before_progress_reproof",
+        "post_resume_progress_observed"
+      ]
+    },
+    {
+      "scenario_id": "D_stalled_fetch_starvation_branch",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "stalled_fetch_starvation_branch",
+        "non_terminal_starvation_context"
+      ]
+    },
+    {
+      "scenario_id": "E_intrinsic_dimension_update_no_failure_reattach",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "videoWidth_videoHeight_intrinsic_truth",
+        "resize_reconciles_dimensions",
+        "dimension_change_not_reattach_failure"
+      ]
+    },
+    {
+      "scenario_id": "F_remount_reattach_continuity",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "legitimate_remount_detected",
+        "old_element_teardown_required",
+        "dimension_and_progress_truth_continuity"
+      ]
+    },
+    {
+      "scenario_id": "G_rvfc_unavailable_quality_fallback",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "rvfc_unavailable_fallback_supported",
+        "quality_delta_progress_observed"
+      ]
+    },
+    {
+      "scenario_id": "H_playing_without_real_frames_non_success_guard",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote video resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "no_early_progress_success",
+        "resume_grace_or_unproven_branch_preserved"
+      ]
+    }
+  ]
+}

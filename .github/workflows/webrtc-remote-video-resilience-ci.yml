@@ -1,0 +1,79 @@
+name: webrtc-remote-video-resilience-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/webrtc-remote-video-resilience-ci.yml"
+      - "server/app/webrtc_remote_video_first_frame_render_stall_dimension_change_resilience_baseline.py"
+      - "server/app/webrtc_remote_video_first_frame_readiness_contract_baseline.py"
+      - "server/app/webrtc_frame_progress_freeze_detection_observability_contract_baseline.py"
+      - "server/app/webrtc_waiting_stalled_resume_recovery_contract_baseline.py"
+      - "server/app/webrtc_dimension_resize_reconciliation_contract_baseline.py"
+      - "server/app/webrtc_remote_video_resilience_ci_gate_baseline.py"
+      - "server/tools/check_webrtc_remote_video_first_frame_render_stall_dimension_change_resilience_baseline.py"
+      - "server/tools/check_webrtc_remote_video_first_frame_readiness_contract_baseline.py"
+      - "server/tools/check_webrtc_frame_progress_freeze_detection_observability_contract_baseline.py"
+      - "server/tools/check_webrtc_waiting_stalled_resume_recovery_contract_baseline.py"
+      - "server/tools/check_webrtc_dimension_resize_reconciliation_contract_baseline.py"
+      - "server/tools/check_webrtc_remote_video_resilience_ci_gate_baseline.py"
+      - "server/tools/run_webrtc_remote_video_resilience_sandbox_smoke.py"
+      - "server/tools/run_webrtc_remote_video_resilience_ci_gate.py"
+      - "docs/step29-remote-video-first-frame-render-stall-dimension-change-resilience-baseline.md"
+      - "docs/step29-remote-video-first-frame-readiness-contract-baseline.md"
+      - "docs/step29-frame-progress-freeze-detection-observability-contract-baseline.md"
+      - "docs/step29-waiting-stalled-resume-recovery-contract-baseline.md"
+      - "docs/step29-dimension-resize-reconciliation-contract-baseline.md"
+      - "docs/step29-remote-video-resilience-sandbox-smoke-baseline.md"
+      - "docs/step29-remote-video-resilience-ci-gate-baseline.md"
+      - "docs/evidence/step29-remote-video-resilience-sandbox-smoke-evidence.json"
+
+jobs:
+  webrtc-remote-video-resilience-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Step 28.7 dependency check
+        run: python tools/check_webrtc_remote_media_resilience_ci_gate_baseline.py
+
+      - name: Step 29.1 baseline check
+        run: python tools/check_webrtc_remote_video_first_frame_render_stall_dimension_change_resilience_baseline.py
+
+      - name: Step 29.2 first-frame readiness check
+        run: python tools/check_webrtc_remote_video_first_frame_readiness_contract_baseline.py
+
+      - name: Step 29.3 progress/freeze observability check
+        run: python tools/check_webrtc_frame_progress_freeze_detection_observability_contract_baseline.py
+
+      - name: Step 29.4 waiting/stalled resume check
+        run: python tools/check_webrtc_waiting_stalled_resume_recovery_contract_baseline.py
+
+      - name: Step 29.5 dimension/resize reconciliation check
+        run: python tools/check_webrtc_dimension_resize_reconciliation_contract_baseline.py
+
+      - name: Step 29.7 CI gate baseline check
+        run: python tools/check_webrtc_remote_video_resilience_ci_gate_baseline.py
+
+      - name: Remote-video resilience CI gate
+        run: python tools/run_webrtc_remote_video_resilience_ci_gate.py

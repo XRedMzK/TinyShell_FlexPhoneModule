@@ -1,0 +1,78 @@
+name: webrtc-capture-resilience-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/webrtc-capture-resilience-ci.yml"
+      - "server/app/webrtc_capture_source_device_permission_resilience_baseline.py"
+      - "server/app/webrtc_media_device_inventory_permission_gated_visibility_contract_baseline.py"
+      - "server/app/webrtc_track_source_termination_semantics_baseline.py"
+      - "server/app/webrtc_screen_share_capture_lifecycle_source_reselection_contract_baseline.py"
+      - "server/app/webrtc_device_change_reconciliation_baseline.py"
+      - "server/app/webrtc_capture_resilience_ci_gate_baseline.py"
+      - "server/tools/check_webrtc_capture_source_device_permission_resilience_baseline.py"
+      - "server/tools/check_webrtc_media_device_inventory_permission_gated_visibility_contract_baseline.py"
+      - "server/tools/check_webrtc_track_source_termination_semantics_baseline.py"
+      - "server/tools/check_webrtc_screen_share_capture_lifecycle_source_reselection_contract_baseline.py"
+      - "server/tools/check_webrtc_device_change_reconciliation_baseline.py"
+      - "server/tools/check_webrtc_capture_resilience_ci_gate_baseline.py"
+      - "server/tools/run_webrtc_capture_resilience_sandbox_smoke.py"
+      - "server/tools/run_webrtc_capture_resilience_ci_simulation.py"
+      - "docs/step26-capture-source-device-permission-resilience-baseline.md"
+      - "docs/step26-media-device-inventory-permission-gated-visibility-contract-baseline.md"
+      - "docs/step26-track-source-termination-semantics-baseline.md"
+      - "docs/step26-screen-share-capture-lifecycle-source-reselection-contract-baseline.md"
+      - "docs/step26-device-change-reconciliation-baseline.md"
+      - "docs/step26-capture-resilience-sandbox-smoke-baseline.md"
+      - "docs/step26-capture-resilience-ci-gate-baseline.md"
+
+jobs:
+  webrtc-capture-resilience-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Compile check
+        run: python -m compileall app tools
+
+      - name: Stage 25.7 dependency check
+        run: python tools/check_webrtc_incall_media_control_ci_gate_baseline.py
+
+      - name: Step 26.1 baseline check
+        run: python tools/check_webrtc_capture_source_device_permission_resilience_baseline.py
+
+      - name: Step 26.2 inventory visibility check
+        run: python tools/check_webrtc_media_device_inventory_permission_gated_visibility_contract_baseline.py
+
+      - name: Step 26.3 termination semantics check
+        run: python tools/check_webrtc_track_source_termination_semantics_baseline.py
+
+      - name: Step 26.4 screen-share lifecycle check
+        run: python tools/check_webrtc_screen_share_capture_lifecycle_source_reselection_contract_baseline.py
+
+      - name: Step 26.5 device-change reconciliation check
+        run: python tools/check_webrtc_device_change_reconciliation_baseline.py
+
+      - name: Step 26.7 CI gate baseline check
+        run: python tools/check_webrtc_capture_resilience_ci_gate_baseline.py
+
+      - name: Capture resilience CI simulation
+        run: python tools/run_webrtc_capture_resilience_ci_simulation.py

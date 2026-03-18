@@ -1,0 +1,159 @@
+{
+  "stage": "28.6",
+  "executed_at": "2026-03-18 17:10 (MSK)",
+  "runtime_class": "sandbox_simulation",
+  "source_runner": "server/tools/run_webrtc_remote_media_resilience_sandbox_smoke.py",
+  "scenarios": [
+    {
+      "scenario_id": "A_clean_remote_attach",
+      "executed_at": "2026-03-18 17:10 (MSK)",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "track_kind": "audio_or_video",
+      "has_stream": true,
+      "initial_play_outcome": "resolved",
+      "retry_play_outcome": null,
+      "mute_seen": false,
+      "unmute_seen": false,
+      "ended_seen": false,
+      "old_element_torn_down": false,
+      "duplicate_attach_prevented": false,
+      "final_binding_owner_key": "receiver-1/transceiver-1",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote media resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "ontrack_attach_with_stream",
+        "play_resolved_to_playing"
+      ],
+      "notes": "Clean attach path reached playing state without recovery branches."
+    },
+    {
+      "scenario_id": "B_streamless_remote_attach",
+      "executed_at": "2026-03-18 17:10 (MSK)",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "track_kind": "audio_or_video",
+      "has_stream": false,
+      "initial_play_outcome": "resolved",
+      "retry_play_outcome": null,
+      "mute_seen": false,
+      "unmute_seen": false,
+      "ended_seen": false,
+      "old_element_torn_down": false,
+      "duplicate_attach_prevented": true,
+      "final_binding_owner_key": "receiver-2/transceiver-2",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote media resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "streamless_fallback_binding",
+        "duplicate_attach_noop"
+      ],
+      "notes": "Empty streams branch used deterministic synthetic binding and prevented duplicate reattach."
+    },
+    {
+      "scenario_id": "C_autoplay_blocked_user_gesture_recovery",
+      "executed_at": "2026-03-18 17:10 (MSK)",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "track_kind": "audio_or_video",
+      "has_stream": true,
+      "initial_play_outcome": "NotAllowedError",
+      "retry_play_outcome": "resolved",
+      "mute_seen": false,
+      "unmute_seen": false,
+      "ended_seen": false,
+      "old_element_torn_down": false,
+      "duplicate_attach_prevented": false,
+      "final_binding_owner_key": "receiver-3/transceiver-3",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote media resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "blocked_requires_user_gesture_branch",
+        "explicit_retry_recovered_to_playing"
+      ],
+      "notes": "Autoplay-blocked path transitioned through explicit user-gesture recovery semantics."
+    },
+    {
+      "scenario_id": "D_temporary_interruption_mute_unmute",
+      "executed_at": "2026-03-18 17:10 (MSK)",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "track_kind": "audio_or_video",
+      "has_stream": true,
+      "initial_play_outcome": "resolved",
+      "retry_play_outcome": null,
+      "mute_seen": true,
+      "unmute_seen": true,
+      "ended_seen": false,
+      "old_element_torn_down": false,
+      "duplicate_attach_prevented": false,
+      "final_binding_owner_key": "receiver-4/transceiver-4",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote media resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "mute_non_terminal",
+        "unmute_restores_flowing_without_reattach"
+      ],
+      "notes": "Temporary interruption preserved binding and recovered without detach/reattach."
+    },
+    {
+      "scenario_id": "E_terminal_track_end",
+      "executed_at": "2026-03-18 17:10 (MSK)",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "track_kind": "audio_or_video",
+      "has_stream": true,
+      "initial_play_outcome": "resolved",
+      "retry_play_outcome": null,
+      "mute_seen": false,
+      "unmute_seen": false,
+      "ended_seen": true,
+      "old_element_torn_down": false,
+      "duplicate_attach_prevented": false,
+      "final_binding_owner_key": "receiver-5/transceiver-5",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote media resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "ended_terminal_state",
+        "no_fake_in_place_auto_recovery"
+      ],
+      "notes": "Ended event reached terminal branch for current track object."
+    },
+    {
+      "scenario_id": "F_remount_reattach_abort_safe_replay",
+      "executed_at": "2026-03-18 17:10 (MSK)",
+      "runtime": "sandbox_simulation",
+      "browser_engine": "simulated_contract_runtime",
+      "track_kind": "audio_or_video",
+      "has_stream": true,
+      "initial_play_outcome": "AbortError",
+      "retry_play_outcome": "resolved",
+      "mute_seen": false,
+      "unmute_seen": false,
+      "ended_seen": false,
+      "old_element_torn_down": true,
+      "duplicate_attach_prevented": false,
+      "final_binding_owner_key": "receiver-6/transceiver-6",
+      "result": "PASS",
+      "proof_refs": [
+        "stdout:WebRTC remote media resilience sandbox smoke: OK"
+      ],
+      "verified_invariants": [
+        "old_element_teardown_before_new_playback",
+        "aborterror_transitional_replay_branch",
+        "reattach_retry_recovered_to_playing"
+      ],
+      "notes": "Remount replay handled AbortError as transitional branch and recovered on retry."
+    }
+  ]
+}
