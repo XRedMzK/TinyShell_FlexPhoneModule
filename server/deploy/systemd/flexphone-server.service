@@ -1,0 +1,18 @@
+[Unit]
+Description=FlexPhone FastAPI backend
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=flexphone
+Group=flexphone
+WorkingDirectory=/opt/flexphone/server
+EnvironmentFile=/etc/flexphone/flexphone.env
+ExecStart=/opt/flexphone/server/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 18000 --proxy-headers
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

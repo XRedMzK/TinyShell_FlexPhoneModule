@@ -7,7 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_name: str = "FlexPhone Server"
     debug: bool = True
-    allowed_origins: list[str] = ["http://127.0.0.1:1420", "tauri://localhost"]
+    allowed_origins: list[str] = [
+        "http://127.0.0.1:1420",
+        "http://localhost:1420",
+        "tauri://localhost",
+    ]
     webrtc_stun_urls: list[str] = Field(
         default_factory=lambda: ["stun:stun.l.google.com:19302"]
     )
